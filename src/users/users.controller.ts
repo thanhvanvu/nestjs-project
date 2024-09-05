@@ -17,13 +17,12 @@ export class UsersController {
 
   @Post()
   create(
-    @Body('email') email: string,
-    @Body('password') password: string,
-    @Body('name') name: string,
+    @Body()
+    createUserDto: CreateUserDto,
   ) {
     // expressJS
     // const myEmail: string = req.body.email
-    return this.usersService.createUser(email, password, name);
+    return this.usersService.createUser(createUserDto);
   }
 
   @Get()

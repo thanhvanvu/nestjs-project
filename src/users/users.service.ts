@@ -22,13 +22,25 @@ export class UsersService {
     return hash;
   };
 
-  async createUser(email: string, password: string, name: string) {
+  // async createUser(email: string, password: string, name: string) {
+  //   // hash password
+  //   const hashPassword = this.hashPassword(password);
+  //   const user = await this.userModel.create({
+  //     email,
+  //     password: hashPassword,
+  //     name,
+  //   });
+
+  //   return user;
+  // }
+
+  createUser(createUserDto: CreateUserDto) {
     // hash password
-    const hashPassword = this.hashPassword(password);
-    const user = await this.userModel.create({
-      email,
+    const hashPassword = this.hashPassword(createUserDto.password);
+    const user = this.userModel.create({
+      email: createUserDto.email,
       password: hashPassword,
-      name,
+      name: createUserDto.name,
     });
 
     return user;
