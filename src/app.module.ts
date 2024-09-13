@@ -10,6 +10,8 @@ import { AuthModule } from './auth/auth.module';
   imports: [
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
+
+      // useFactory: get value from .env
       useFactory: async (configService: ConfigService) => ({
         uri: configService.get<string>('MONGODB_URI'),
       }),
