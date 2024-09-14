@@ -6,6 +6,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { LocalAuthGuard } from './auth/local-auth.guard';
 import { AuthService } from './auth/auth.service';
 import { JwtAuthGuard } from './auth/passport/jwt-auth.guard';
+import { Public } from './decorator/customize';
 
 @Controller()
 export class AppController {
@@ -21,7 +22,8 @@ export class AppController {
     return this.appService.getHello();
   }
 
-  // @UseGuards(LocalAuthGuard)
+  @Public()
+  @UseGuards(LocalAuthGuard)
   @Post('/login')
   handleLogin(@Request() req) {
     // khi truy cập vô route /login
