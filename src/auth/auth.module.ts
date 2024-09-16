@@ -7,6 +7,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtStrategy } from './passport/jwt.strategy';
 import ms from 'ms';
+import { AuthController } from './auth.controller';
 
 @Module({
   // import UserModule to use full functions
@@ -26,7 +27,7 @@ import ms from 'ms';
       inject: [ConfigService],
     }),
   ],
-
+  controllers: [AuthController],
   providers: [AuthService, LocalStrategy, JwtStrategy],
 
   exports: [AuthService],
