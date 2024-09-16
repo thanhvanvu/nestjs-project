@@ -12,7 +12,7 @@ async function bootstrap() {
   const port = configService.get('PORT');
 
   const reflector = app.get(Reflector);
-  // app.useGlobalGuards(new JwtAuthGuard(reflector));
+  app.useGlobalGuards(new JwtAuthGuard(reflector));
 
   app.useGlobalPipes(new ValidationPipe());
 

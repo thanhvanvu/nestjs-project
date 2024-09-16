@@ -3,9 +3,9 @@ import { IsEmail, IsNotEmpty } from 'class-validator';
 // DTO: Data Transfer Object
 export class CreateCompanyDto {
   @IsNotEmpty({
-    message: 'Email không được để trống!',
+    message: 'Tên công ty không được để trống!',
   })
-  email: string;
+  name: string;
 
   @IsNotEmpty({
     message: 'Địa chỉ không được để trống!',
