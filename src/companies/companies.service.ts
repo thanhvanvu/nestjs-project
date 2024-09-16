@@ -28,15 +28,25 @@ export class CompaniesService {
   }
 
   findAll() {
-    return `This action returns all companies`;
+    const companies = this.companyModel.find({});
+    return companies;
   }
 
   findOne(id: number) {
     return `This action returns a #${id} company`;
   }
 
-  update(id: number, updateCompanyDto: UpdateCompanyDto) {
-    return `This action updates a #${id} company`;
+  update(id: string, updateCompanyDto: UpdateCompanyDto, user: IUser) {
+    return this.companyModel.updateOne(
+      { _id: id },
+      {
+        ...updateCompanyDto,
+        updatedBy: {
+          _id: user._id,
+          email: user.email,
+        },
+      },
+    );
   }
 
   remove(id: number) {
