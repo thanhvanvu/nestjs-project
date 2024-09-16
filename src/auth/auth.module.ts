@@ -5,9 +5,7 @@ import { PassportModule } from '@nestjs/passport';
 import { LocalStrategy } from './passport/local.strategy';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { JwtStrategy } from './jwt.strategy';
-import { APP_GUARD } from '@nestjs/core';
-import { JwtAuthGuard } from './passport/jwt-auth.guard';
+import { JwtStrategy } from './passport/jwt.strategy';
 import ms from 'ms';
 
 @Module({
@@ -29,17 +27,7 @@ import ms from 'ms';
     }),
   ],
 
-  providers: [
-    AuthService,
-    LocalStrategy,
-
-    // Enable authentication globally
-    JwtStrategy,
-    {
-      provide: APP_GUARD,
-      useClass: JwtAuthGuard,
-    },
-  ],
+  providers: [AuthService, LocalStrategy, JwtStrategy],
 
   exports: [AuthService],
 })

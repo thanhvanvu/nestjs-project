@@ -1,3 +1,4 @@
+import { Public } from './../decorator/customize';
 import {
   Controller,
   Get,
@@ -15,6 +16,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @Public()
   @Post()
   create(
     @Body()
