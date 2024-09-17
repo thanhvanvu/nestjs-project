@@ -35,6 +35,7 @@ export class UsersController {
   }
 
   @Public()
+  @ResponseMessage('Fetch user by id!')
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.usersService.findUserById(id);
@@ -43,12 +44,12 @@ export class UsersController {
   @ResponseMessage('Update a User!')
   @Patch()
   update(@Body() updateUserDto: UpdateUserDto, @User() user: IUser) {
-    return this.usersService.update(updateUserDto, user);
+    return this.usersService.updateUserById(updateUserDto, user);
   }
 
   @ResponseMessage('Delete a User!')
   @Delete(':id')
   remove(@Param('id') id: string, @User() user: IUser) {
-    return this.usersService.remove(id, user);
+    return this.usersService.removeUserById(id, user);
   }
 }

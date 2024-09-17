@@ -106,7 +106,7 @@ export class UsersService {
     });
   }
 
-  async update(updateUserDto: UpdateUserDto, user: IUser) {
+  async updateUserById(updateUserDto: UpdateUserDto, user: IUser) {
     if (!mongoose.Types.ObjectId.isValid(updateUserDto._id)) {
       throw new BadRequestException(`Người dùng không tồn tại!`);
     }
@@ -123,7 +123,7 @@ export class UsersService {
     );
   }
 
-  async remove(id: string, user: IUser) {
+  async removeUserById(id: string, user: IUser) {
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return 'User not found';
     }
