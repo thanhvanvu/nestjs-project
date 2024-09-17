@@ -88,14 +88,16 @@ export class UsersService {
     return `This action returns all users`;
   }
 
-  findOne(id: string) {
+  findUserById(id: string) {
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return 'User not found';
     }
 
-    return this.userModel.findOne({
-      _id: id,
-    });
+    return this.userModel
+      .findOne({
+        _id: id,
+      })
+      .select('-password');
   }
 
   findOneByUsername(username: string) {
