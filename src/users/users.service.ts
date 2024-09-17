@@ -21,6 +21,11 @@ export class UsersService {
     return hash;
   };
 
+  isValidPassword(password: string, hash: string) {
+    const isPasswordMatch = compareSync(password, hash); // true
+    return isPasswordMatch;
+  }
+
   async createUser(createUserDto: CreateUserDto, user: IUser) {
     const { name, email, password, age, gender, address, role, company } =
       createUserDto;
@@ -99,15 +104,20 @@ export class UsersService {
     });
   }
 
-  isValidPassword(password: string, hash: string) {
-    const isPasswordMatch = compareSync(password, hash); // true
-    return isPasswordMatch;
-  }
+  async update(updateUserDto: UpdateUserDto, user: IUser) {
+    if (!mongoose.Types.ObjectId.isValid(updateUserDto._id)) {
+      throw new BadRequestException(`Người dùng không tồn tại!`);
+    }
 
-  update(updateUserDto: UpdateUserDto) {
     return this.userModel.updateOne(
       { _id: updateUserDto._id },
-      { ...updateUserDto },
+      {
+        ...updateUserDto,
+        updatedBy: {
+          _id: user._id,
+          email: user.email,
+        },
+      },
     );
   }
 
