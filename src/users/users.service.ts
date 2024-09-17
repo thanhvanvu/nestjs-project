@@ -6,6 +6,7 @@ import { User, UserDocument } from './schemas/user.schema';
 import mongoose, { Model } from 'mongoose';
 import { genSaltSync, hashSync, compareSync } from 'bcryptjs';
 import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
+import { IUser } from './users.interface';
 
 @Injectable()
 export class UsersService {
@@ -20,16 +21,39 @@ export class UsersService {
     return hash;
   };
 
-  createUser(createUserDto: CreateUserDto) {
-    // hash password
-    const hashPassword = this.hashPassword(createUserDto.password);
-    const user = this.userModel.create({
-      email: createUserDto.email,
-      password: hashPassword,
-      name: createUserDto.name,
+  async createUser(createUserDto: CreateUserDto, user: IUser) {
+    const { name, email, password, age, gender, address, role, company } =
+      createUserDto;
+    // check xem đã có người dùng này chưa
+    const isExistUser = await this.userModel.findOne({
+      email,
     });
 
-    return user;
+    if (isExistUser) {
+      throw new BadRequestException(`Người dùng ${email} đã tồn tại!`);
+    }
+
+    // hash password
+    const hashPassword = this.hashPassword(createUserDto.password);
+    const newUser = await this.userModel.create({
+      name,
+      email,
+      password: hashPassword,
+      age,
+      gender,
+      address,
+      role,
+      company,
+      createdBy: {
+        _id: user._id,
+        email: user.email,
+      },
+    });
+
+    return {
+      _id: newUser?._id,
+      createdAt: newUser.createdAt,
+    };
   }
 
   async register(registerUserDto: RegisterUserDto) {

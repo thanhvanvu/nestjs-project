@@ -1,4 +1,4 @@
-import { Public } from './../decorator/customize';
+import { Public, ResponseMessage, User } from './../decorator/customize';
 import {
   Controller,
   Get,
@@ -11,19 +11,22 @@ import {
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { IUser } from './users.interface';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
+  @ResponseMessage('Create a new User!')
   create(
     @Body()
     createUserDto: CreateUserDto,
+    @User() user: IUser,
   ) {
     // expressJS
     // const myEmail: string = req.body.email
-    return this.usersService.createUser(createUserDto);
+    return this.usersService.createUser(createUserDto, user);
   }
 
   @Get()
