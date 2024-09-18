@@ -32,13 +32,13 @@ export class UsersController {
 
   @Get()
   findAll(
-    @Query('page') currentPage: string,
-    @Query('limit') limit: string,
+    @Query('current') current: string,
+    @Query('pageSize') pageSize: string,
     @Query() queryString: string,
   ) {
     return this.usersService.findAllUserWithPagination(
-      +currentPage,
-      +limit,
+      +current,
+      +pageSize,
       queryString,
     );
   }
