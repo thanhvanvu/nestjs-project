@@ -182,4 +182,17 @@ export class UsersService {
     );
     return this.userModel.softDelete({ _id: id });
   }
+
+  updateUserToken = (refresh_token: string, _id: string) => {
+    if (!mongoose.Types.ObjectId.isValid(_id)) {
+      throw new BadRequestException(`Người dùng không tồn tại!`);
+    }
+
+    return this.userModel.updateOne(
+      { _id: _id },
+      {
+        refreshToken: refresh_token,
+      },
+    );
+  };
 }
