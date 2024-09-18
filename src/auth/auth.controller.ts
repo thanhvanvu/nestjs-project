@@ -16,6 +16,7 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Public()
+  @ResponseMessage('User Login')
   @UseGuards(LocalAuthGuard)
   @Post('/login')
   handleLogin(@Request() req) {
