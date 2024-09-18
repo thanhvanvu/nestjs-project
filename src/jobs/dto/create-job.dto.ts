@@ -1,9 +1,11 @@
-export class CreateJobDto {}
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
+  IsArray,
+  IsDate,
   IsNotEmpty,
   IsNotEmptyObject,
   IsObject,
+  IsString,
   ValidateNested,
 } from 'class-validator';
 import mongoose from 'mongoose';
@@ -20,8 +22,7 @@ class CompanyDto {
   name: string;
 }
 
-// DTO: Data Transfer Object
-export class CreateCompanyDto {
+export class CreateJobDto {
   @IsNotEmpty({
     message: 'name không được để trống!',
   })
@@ -30,6 +31,8 @@ export class CreateCompanyDto {
   @IsNotEmpty({
     message: 'skills không được để trống!',
   })
+  @IsArray({ message: 'skills có định dạng là array' })
+  @IsString({ each: true, message: 'skill định dạng là string' })
   skills: string[];
 
   // validate 1 object
@@ -67,11 +70,15 @@ export class CreateCompanyDto {
   @IsNotEmpty({
     message: 'startDate không được để trống!',
   })
+  @Transform(({ value }) => new Date(value))
+  @IsDate({ message: 'startDate có định dạng Date' })
   startDate: Date;
 
   @IsNotEmpty({
     message: 'endDate không được để trống!',
   })
+  @Transform(({ value }) => new Date(value))
+  @IsDate({ message: 'endDate có định dạng Date' })
   endDate: Date;
 
   @IsNotEmpty({
