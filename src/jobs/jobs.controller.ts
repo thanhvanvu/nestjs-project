@@ -28,9 +28,10 @@ export class JobsController {
     return this.jobsService.findAll();
   }
 
+  @ResponseMessage('Fetch a job by id')
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.jobsService.findOne(+id);
+  handleGetJobById(@Param('id') id: string) {
+    return this.jobsService.getJobById(id);
   }
 
   @ResponseMessage('Update a job')

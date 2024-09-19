@@ -33,8 +33,12 @@ export class JobsService {
     return `This action returns all jobs`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} job`;
+  getJobById(id: string) {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return 'Job not found';
+    }
+
+    return this.jobModel.findById({ _id: id });
   }
 
   updateJob(id: string, updateJobDto: UpdateJobDto, user: IUser) {
