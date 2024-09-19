@@ -43,8 +43,9 @@ export class JobsController {
     return this.jobsService.updateJob(id, updateJobDto, user);
   }
 
+  @ResponseMessage('Delete a job')
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.jobsService.remove(+id);
+  handleDeleteJob(@Param('id') id: string, @User() user: IUser) {
+    return this.jobsService.deleteJob(id, user);
   }
 }
