@@ -5,6 +5,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
 import { Job, JobDocument } from './schemas/job.schema';
 import { IUser } from 'src/users/users.interface';
+import mongoose from 'mongoose';
 
 @Injectable()
 export class JobsService {
@@ -23,8 +24,8 @@ export class JobsService {
     });
 
     return {
-      _id: newJob._id,
-      createdAt: newJob.createdAt,
+      _id: newJob?._id,
+      createdAt: newJob?.createdAt,
     };
   }
 
@@ -36,8 +37,21 @@ export class JobsService {
     return `This action returns a #${id} job`;
   }
 
-  update(id: number, updateJobDto: UpdateJobDto) {
-    return `This action updates a #${id} job`;
+  updateJob(id: string, updateJobDto: UpdateJobDto, user: IUser) {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return 'Job not found';
+    }
+
+    return this.jobModel.updateOne(
+      { _id: id },
+      {
+        ...updateJobDto,
+        updatedBy: {
+          _id: user._id,
+          email: user.email,
+        },
+      },
+    );
   }
 
   remove(id: number) {
