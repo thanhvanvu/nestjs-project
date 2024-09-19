@@ -16,4 +16,6 @@ export class CreateCompanyDto {
     message: 'Thông tin không được để trống!',
   })
   description: string;
+
+  logo: string;
 }
