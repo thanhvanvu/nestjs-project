@@ -1,11 +1,4 @@
-import { Type } from 'class-transformer';
-import {
-  IsEmail,
-  IsNotEmpty,
-  IsNotEmptyObject,
-  IsObject,
-  ValidateNested,
-} from 'class-validator';
+import { IsNotEmpty } from 'class-validator';
 import mongoose from 'mongoose';
 
 // DTO: Data Transfer Object
@@ -46,11 +39,6 @@ export class CreateUserResumeDto {
     message: 'Url không được để trống!',
   })
   url: string;
-
-  @IsNotEmpty({
-    message: 'Status không được để trống!',
-  })
-  status: string;
 
   @IsNotEmpty({
     message: 'Company Id không được để trống!',
