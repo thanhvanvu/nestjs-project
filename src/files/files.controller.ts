@@ -21,7 +21,7 @@ export class FilesController {
   constructor(private readonly filesService: FilesService) {}
 
   @Post('upload')
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(FileInterceptor('fileUpload'))
   // https://docs.nestjs.com/techniques/file-upload#file-validation
   uploadFile(
     @UploadedFile(
