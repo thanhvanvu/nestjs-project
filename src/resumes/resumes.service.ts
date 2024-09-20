@@ -1,12 +1,16 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateUserResumeDto } from './dto/create-resume.dto';
-import { UpdateResumeDto } from './dto/update-resume.dto';
+import {
+  UpdateResumeDto,
+  UpdateStatusResumeDto,
+} from './dto/update-resume.dto';
 import { IUser } from 'src/users/users.interface';
 import { InjectModel } from '@nestjs/mongoose';
 import { Resume, ResumeDocument } from './schemas/resume.schema';
 import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
 import aqp from 'api-query-params';
 import { isEmpty } from 'class-validator';
+import mongoose from 'mongoose';
 
 @Injectable()
 export class ResumesService {
@@ -80,12 +84,42 @@ export class ResumesService {
     };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} resume`;
+  async getResumeById(id: string) {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      throw new BadRequestException('Resume not found');
+    }
+
+    return await this.resumeModel.findById(id);
   }
 
-  update(id: number, updateResumeDto: UpdateResumeDto) {
-    return `This action updates a #${id} resume`;
+  async updateStatusResume(
+    id: string,
+    updateStatusResumeDto: UpdateStatusResumeDto,
+    user: IUser,
+  ) {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      throw new BadRequestException('Resume not found');
+    }
+    return await this.resumeModel.updateOne(
+      { _id: id },
+      {
+        status: updateStatusResumeDto.status,
+        updatedBy: {
+          _id: user._id,
+          email: user.email,
+        },
+        $push: {
+          history: {
+            status: updateStatusResumeDto.status,
+            updatedAt: new Date(),
+            updatedBy: {
+              _id: user._id,
+              email: user.email,
+            },
+          },
+        },
+      },
+    );
   }
 
   remove(id: number) {

@@ -1,4 +1,4 @@
-import { IsNotEmpty } from 'class-validator';
+import { IsMongoId, IsNotEmpty } from 'class-validator';
 import mongoose from 'mongoose';
 
 // DTO: Data Transfer Object
@@ -11,6 +11,7 @@ export class CreateResumeDto {
   @IsNotEmpty({
     message: 'User Id không được để trống!',
   })
+  @IsMongoId()
   userId: mongoose.Schema.Types.ObjectId;
 
   @IsNotEmpty({
@@ -26,11 +27,13 @@ export class CreateResumeDto {
   @IsNotEmpty({
     message: 'Company Id không được để trống!',
   })
+  @IsMongoId()
   company: mongoose.Schema.Types.ObjectId;
 
   @IsNotEmpty({
     message: 'Job Id không được để trống!',
   })
+  @IsMongoId()
   job: mongoose.Schema.Types.ObjectId;
 }
 

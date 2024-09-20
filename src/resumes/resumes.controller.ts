@@ -10,7 +10,10 @@ import {
 } from '@nestjs/common';
 import { ResumesService } from './resumes.service';
 import { CreateResumeDto, CreateUserResumeDto } from './dto/create-resume.dto';
-import { UpdateResumeDto } from './dto/update-resume.dto';
+import {
+  UpdateResumeDto,
+  UpdateStatusResumeDto,
+} from './dto/update-resume.dto';
 import { ResponseMessage, User } from 'src/decorator/customize';
 import { IUser } from 'src/users/users.interface';
 
@@ -37,14 +40,23 @@ export class ResumesController {
     return this.resumesService.getAllResumes(+current, +pageSize, queryString);
   }
 
+  @ResponseMessage('Fetch a resume by id')
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.resumesService.findOne(+id);
+  handleGetResumeById(@Param('id') id: string) {
+    return this.resumesService.getResumeById(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateResumeDto: UpdateResumeDto) {
-    return this.resumesService.update(+id, updateResumeDto);
+  handleUpdateStatusResume(
+    @User() user: IUser,
+    @Param('id') id: string,
+    @Body() updateStatusResumeDto: UpdateStatusResumeDto,
+  ) {
+    return this.resumesService.updateStatusResume(
+      id,
+      updateStatusResumeDto,
+      user,
+    );
   }
 
   @Delete(':id')

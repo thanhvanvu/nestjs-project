@@ -71,7 +71,7 @@ export class JobsService {
 
   getJobById(id: string) {
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return 'Job not found';
+      throw new BadRequestException('Job not found');
     }
 
     return this.jobModel.findById({ _id: id });
@@ -79,7 +79,7 @@ export class JobsService {
 
   updateJob(id: string, updateJobDto: UpdateJobDto, user: IUser) {
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return 'Job not found';
+      throw new BadRequestException('Job not found');
     }
 
     return this.jobModel.updateOne(
@@ -96,7 +96,7 @@ export class JobsService {
 
   async deleteJob(id: string, user: IUser) {
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      throw new BadRequestException('User not found');
+      throw new BadRequestException('Job not found');
     }
 
     await this.jobModel.updateOne(
