@@ -46,6 +46,7 @@ export class ResumesController {
     return this.resumesService.getResumeById(id);
   }
 
+  @ResponseMessage('Update status resume')
   @Patch(':id')
   handleUpdateStatusResume(
     @User() user: IUser,
@@ -59,8 +60,15 @@ export class ResumesController {
     );
   }
 
+  @ResponseMessage('Delete a resume by id')
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.resumesService.remove(+id);
+  handleDeleteResume(@Param('id') id: string, @User() user: IUser) {
+    return this.resumesService.deleteResume(id, user);
+  }
+
+  @ResponseMessage('Get Resume by User')
+  @Post('/by-user')
+  handleGetResumeByUser(@User() user: IUser) {
+    return this.resumesService.getResumeByUser(user);
   }
 }
