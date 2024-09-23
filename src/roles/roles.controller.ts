@@ -1,15 +1,26 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { RolesService } from './roles.service';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
+import { ResponseMessage, User } from 'src/decorator/customize';
+import { IUser } from 'src/users/users.interface';
 
 @Controller('roles')
 export class RolesController {
   constructor(private readonly rolesService: RolesService) {}
 
+  @ResponseMessage('Create a new role')
   @Post()
-  create(@Body() createRoleDto: CreateRoleDto) {
-    return this.rolesService.create(createRoleDto);
+  handleCreateRole(@Body() createRoleDto: CreateRoleDto, @User() user: IUser) {
+    return this.rolesService.createRole(createRoleDto, user);
   }
 
   @Get()

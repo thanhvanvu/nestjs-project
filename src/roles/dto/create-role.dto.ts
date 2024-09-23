@@ -10,7 +10,7 @@ export class CreateRoleDto {
   @IsNotEmpty({
     message: 'desciption không được để trống!',
   })
-  desciption: string;
+  description: string;
 
   @IsNotEmpty({
     message: 'isActive không được để trống!',
@@ -21,5 +21,5 @@ export class CreateRoleDto {
   @IsNotEmpty({ message: 'permission không được để trống' })
   @IsMongoId({ each: true, message: 'each permission là mongo object id' })
   @IsArray({ message: 'permission must be an array' })
-  permission: mongoose.Schema.Types.ObjectId[];
+  permissions: mongoose.Schema.Types.ObjectId[];
 }
