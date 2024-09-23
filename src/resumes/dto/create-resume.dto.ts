@@ -28,13 +28,13 @@ export class CreateResumeDto {
     message: 'Company Id không được để trống!',
   })
   @IsMongoId()
-  company: mongoose.Schema.Types.ObjectId;
+  companyId: mongoose.Schema.Types.ObjectId;
 
   @IsNotEmpty({
     message: 'Job Id không được để trống!',
   })
   @IsMongoId()
-  job: mongoose.Schema.Types.ObjectId;
+  jobId: mongoose.Schema.Types.ObjectId;
 }
 
 export class CreateUserResumeDto {
@@ -46,10 +46,10 @@ export class CreateUserResumeDto {
   @IsNotEmpty({
     message: 'Company Id không được để trống!',
   })
-  company: mongoose.Schema.Types.ObjectId;
+  companyId: mongoose.Schema.Types.ObjectId;
 
   @IsNotEmpty({
     message: 'Job Id không được để trống!',
   })
-  job: mongoose.Schema.Types.ObjectId;
+  jobId: mongoose.Schema.Types.ObjectId;
 }
