@@ -50,8 +50,9 @@ export class RolesController {
     return this.rolesService.updateRole(id, updateRoleDto, user);
   }
 
+  @ResponseMessage('Delete a role')
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.rolesService.remove(+id);
+  handleDeleteRole(@Param('id') id: string, @User() user: IUser) {
+    return this.rolesService.deleteRole(id, user);
   }
 }
