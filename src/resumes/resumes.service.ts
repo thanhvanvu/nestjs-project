@@ -49,6 +49,7 @@ export class ResumesService {
 
   async getAllResumes(current: number, pageSize: number, queryString: string) {
     const { filter, projection, population } = aqp(queryString);
+
     let { sort } = aqp(queryString);
 
     delete filter.current;
@@ -71,6 +72,7 @@ export class ResumesService {
       // @ts-ignore: Unreachable code error
       .sort(sort as any)
       .populate(population)
+      .select(projection as any)
       .exec();
 
     return {
