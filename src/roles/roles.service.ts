@@ -78,8 +78,14 @@ export class RolesService {
     };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} role`;
+  getRoleById(id: string) {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      throw new BadRequestException('Id is not valid');
+    }
+
+    return this.roleModel.findOne({
+      _id: id,
+    });
   }
 
   async updateRole(id: string, updateRoleDto: UpdateRoleDto, user: IUser) {

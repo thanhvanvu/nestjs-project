@@ -34,9 +34,10 @@ export class RolesController {
     return this.rolesService.getAllRoles(+current, +pageSize, queryString);
   }
 
+  @ResponseMessage('Get role by id')
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.rolesService.findOne(+id);
+  handleGetRoleById(@Param('id') id: string) {
+    return this.rolesService.getRoleById(id);
   }
 
   @ResponseMessage('Update a role')
