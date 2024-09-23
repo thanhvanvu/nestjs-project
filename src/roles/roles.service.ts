@@ -83,9 +83,14 @@ export class RolesService {
       throw new BadRequestException('Id is not valid');
     }
 
-    return this.roleModel.findOne({
-      _id: id,
-    });
+    return this.roleModel
+      .findOne({
+        _id: id,
+      })
+      .populate({
+        path: 'permissions',
+        select: { _id: 1, apiPath: 1, name: 1, method: 1 },
+      });
   }
 
   async updateRole(id: string, updateRoleDto: UpdateRoleDto, user: IUser) {
