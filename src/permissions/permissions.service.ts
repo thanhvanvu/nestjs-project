@@ -92,7 +92,7 @@ export class PermissionsService {
     });
   }
 
-  updatePermission(
+  async updatePermission(
     id: string,
     updatePermissionDto: UpdatePermissionDto,
     user: IUser,
@@ -102,7 +102,7 @@ export class PermissionsService {
       throw new BadRequestException('Permission not found');
     }
 
-    return this.permissionModel.updateOne(
+    return await this.permissionModel.updateOne(
       {
         _id: id,
       },
@@ -114,11 +114,27 @@ export class PermissionsService {
         },
       },
     );
-
-    return `This action updates a #${id} permission`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} permission`;
+  async deletePermission(id: string, user: IUser) {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      throw new BadRequestException('Permission not found');
+    }
+
+    await this.permissionModel.updateOne(
+      {
+        _id: id,
+      },
+      {
+        deletedBy: {
+          _id: user._id,
+          email: user.email,
+        },
+      },
+    );
+
+    return this.permissionModel.softDelete({
+      _id: id,
+    });
   }
 }
