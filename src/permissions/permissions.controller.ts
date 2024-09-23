@@ -36,12 +36,18 @@ export class PermissionsController {
     return this.permissionsService.findOne(+id);
   }
 
+  @ResponseMessage('Update a permission')
   @Patch(':id')
-  update(
+  handleUpdatePermission(
     @Param('id') id: string,
     @Body() updatePermissionDto: UpdatePermissionDto,
+    @User() user: IUser,
   ) {
-    return this.permissionsService.update(+id, updatePermissionDto);
+    return this.permissionsService.updatePermission(
+      id,
+      updatePermissionDto,
+      user,
+    );
   }
 
   @Delete(':id')

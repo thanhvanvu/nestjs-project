@@ -5,6 +5,7 @@ import { IUser } from 'src/users/users.interface';
 import { InjectModel } from '@nestjs/mongoose';
 import { Permission, PermissionDocument } from './schemas/permission.schemas';
 import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
+import mongoose from 'mongoose';
 
 @Injectable()
 export class PermissionsService {
@@ -48,7 +49,29 @@ export class PermissionsService {
     return `This action returns a #${id} permission`;
   }
 
-  update(id: number, updatePermissionDto: UpdatePermissionDto) {
+  updatePermission(
+    id: string,
+    updatePermissionDto: UpdatePermissionDto,
+    user: IUser,
+  ) {
+    // check if permission is exist?
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      throw new BadRequestException('Resume not found');
+    }
+
+    return this.permissionModel.updateOne(
+      {
+        _id: id,
+      },
+      {
+        ...updatePermissionDto,
+        updatedBy: {
+          _id: user._id,
+          email: user.email,
+        },
+      },
+    );
+
     return `This action updates a #${id} permission`;
   }
 
