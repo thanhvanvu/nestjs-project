@@ -80,11 +80,16 @@ export class PermissionsService {
       },
       result, //kết quả query
     };
-    return `This action returns all permissions`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} permission`;
+  getPermissionById(id: string) {
+    // check if permission is exist?
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      throw new BadRequestException('Id is not valid');
+    }
+    return this.permissionModel.findOne({
+      _id: id,
+    });
   }
 
   updatePermission(
@@ -94,7 +99,7 @@ export class PermissionsService {
   ) {
     // check if permission is exist?
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      throw new BadRequestException('Resume not found');
+      throw new BadRequestException('Permission not found');
     }
 
     return this.permissionModel.updateOne(

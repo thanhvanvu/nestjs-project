@@ -41,9 +41,10 @@ export class PermissionsController {
     );
   }
 
+  @ResponseMessage('Get permission by id')
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.permissionsService.findOne(+id);
+  handleGetPermissionById(@Param('id') id: string) {
+    return this.permissionsService.getPermissionById(id);
   }
 
   @ResponseMessage('Update a permission')
