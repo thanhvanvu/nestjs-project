@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { PermissionsService } from './permissions.service';
 import { CreatePermissionDto } from './dto/create-permission.dto';
@@ -26,9 +27,18 @@ export class PermissionsController {
     return this.permissionsService.createPermission(createPermissionDto, user);
   }
 
+  @ResponseMessage('Get all permissions with pagination')
   @Get()
-  findAll() {
-    return this.permissionsService.findAll();
+  handleGetAllPermissions(
+    @Query('current') current: string,
+    @Query('pageSize') pageSize: string,
+    @Query() queryString: string,
+  ) {
+    return this.permissionsService.getAllPermissions(
+      +current,
+      +pageSize,
+      queryString,
+    );
   }
 
   @Get(':id')
