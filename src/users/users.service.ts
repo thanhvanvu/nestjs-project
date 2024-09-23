@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadGatewayException,
+  BadRequestException,
+  Injectable,
+} from '@nestjs/common';
 import { CreateUserDto, RegisterUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectModel } from '@nestjs/mongoose';
@@ -138,13 +142,16 @@ export class UsersService {
       .findOne({
         _id: id,
       })
-      .select('-password');
+      .select('-password')
+      .populate({ path: 'role', select: { name: 1, _id: 1 } });
   }
 
   findOneByUsername(username: string) {
-    return this.userModel.findOne({
-      email: username,
-    });
+    return this.userModel
+      .findOne({
+        email: username,
+      })
+      .populate({ path: 'role', select: { name: 1, permissions: 1 } });
   }
 
   async updateUserById(updateUserDto: UpdateUserDto, user: IUser) {
@@ -167,6 +174,14 @@ export class UsersService {
   async removeUserById(id: string, user: IUser) {
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return 'User not found';
+    }
+
+    const foundUser = await this.userModel.findOne({
+      _id: id,
+    });
+
+    if (foundUser.email === 'admind@gmail.com') {
+      throw new BadGatewayException('Không thể xóa admin!');
     }
 
     await this.userModel.updateOne(

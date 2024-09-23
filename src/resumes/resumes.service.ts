@@ -145,8 +145,20 @@ export class ResumesService {
   }
 
   async getResumeByUser(user: IUser) {
-    return this.resumeModel.find({
-      userId: user._id,
-    });
+    return this.resumeModel
+      .find({
+        userId: user._id,
+      })
+      .sort('-createdAt')
+      .populate([
+        {
+          path: 'companyId',
+          select: { name: 1 },
+        },
+        {
+          path: 'jobId',
+          select: { name: 1 },
+        },
+      ]);
   }
 }

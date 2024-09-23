@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadGatewayException,
+  BadRequestException,
+  Injectable,
+} from '@nestjs/common';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
 import { InjectModel } from '@nestjs/mongoose';
@@ -89,7 +93,7 @@ export class RolesService {
       })
       .populate({
         path: 'permissions',
-        select: { _id: 1, apiPath: 1, name: 1, method: 1 },
+        select: { _id: 1, apiPath: 1, name: 1, method: 1, module: 1 },
       });
   }
 
@@ -113,6 +117,14 @@ export class RolesService {
   }
 
   async deleteRole(id: string, user: IUser) {
+    const foundRole = await this.roleModel.findOne({
+      _id: id,
+    });
+
+    if (foundRole.name === 'ADMIN') {
+      throw new BadGatewayException('Không thể xóa role ADMIN!');
+    }
+
     await this.roleModel.updateOne(
       {
         _id: id,
