@@ -6,6 +6,8 @@ import { Role, RoleDocument } from './schemas/role.schema';
 import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
 import { IUser } from 'src/users/users.interface';
 import mongoose from 'mongoose';
+import aqp from 'api-query-params';
+import { isEmpty } from 'class-validator';
 
 @Injectable()
 export class RolesService {
@@ -37,8 +39,43 @@ export class RolesService {
     };
   }
 
-  findAll() {
-    return `This action returns all roles`;
+  async getAllRoles(current: number, pageSize: number, queryString: string) {
+    const { filter, projection, population } = aqp(queryString);
+
+    let { sort } = aqp(queryString);
+
+    delete filter.current;
+    delete filter.pageSize;
+
+    let offset = (+current - 1) * +pageSize;
+    let defaultLimit = +pageSize ? +pageSize : 10;
+
+    const totalItems = (await this.roleModel.find(filter)).length;
+    const totalPages = Math.ceil(totalItems / defaultLimit);
+
+    if (isEmpty(sort)) {
+      // @ts-ignore: Unreachable code error
+      sort = '-updatedAt';
+    }
+    const result = await this.roleModel
+      .find(filter)
+      .skip(offset)
+      .limit(defaultLimit)
+      // @ts-ignore: Unreachable code error
+      .sort(sort as any)
+      .populate(population)
+      .select(projection as any)
+      .exec();
+
+    return {
+      meta: {
+        current: current, //trang hiện tại
+        pageSize: pageSize, //số lượng bản ghi đã lấy
+        pages: totalPages, //tổng số trang với điều kiện query
+        total: totalItems, // tổng số phần tử (số bản ghi)
+      },
+      result, //kết quả query
+    };
   }
 
   findOne(id: number) {
