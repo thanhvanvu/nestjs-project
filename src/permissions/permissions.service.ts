@@ -87,6 +87,7 @@ export class PermissionsService {
     if (!mongoose.Types.ObjectId.isValid(id)) {
       throw new BadRequestException('Id is not valid');
     }
+
     return this.permissionModel.findOne({
       _id: id,
     });
