@@ -8,6 +8,7 @@ import {
   Permission,
   PermissionSchema,
 } from 'src/permissions/schemas/permission.schemas';
+import { UsersService } from 'src/users/users.service';
 
 @Module({
   imports: [
@@ -18,6 +19,6 @@ import {
     ]),
   ],
   controllers: [DatabasesController],
-  providers: [DatabasesService],
+  providers: [DatabasesService, UsersService],
 })
 export class DatabasesModule {}
