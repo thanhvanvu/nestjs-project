@@ -158,7 +158,6 @@ export class AuthService {
   }
 
   async logout(user: IUser, response: Response) {
-    console.log(user);
     // update refresh token to empty
     await this.usersService.updateUserToken('', user._id);
 
