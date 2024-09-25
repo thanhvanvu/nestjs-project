@@ -7,88 +7,24 @@ import { CreateUserDto, RegisterUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from './schemas/user.schema';
-import mongoose, { Model } from 'mongoose';
+import mongoose from 'mongoose';
 import { genSaltSync, hashSync, compareSync } from 'bcryptjs';
 import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
 import { IUser } from './users.interface';
 import aqp from 'api-query-params';
 import { isEmpty } from 'class-validator';
+import { USER_ROLE } from 'src/databases/sample';
+import { Role, RoleDocument } from 'src/roles/schemas/role.schema';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel(User.name)
     private userModel: SoftDeleteModel<UserDocument>,
+
+    @InjectModel(Role.name)
+    private roleModel: SoftDeleteModel<RoleDocument>,
   ) {}
-
-  hashPassword = (plainPassword: string) => {
-    const salt = genSaltSync(10);
-    const hash = hashSync(plainPassword, salt);
-    return hash;
-  };
-
-  isValidPassword(password: string, hash: string) {
-    const isPasswordMatch = compareSync(password, hash); // true
-    return isPasswordMatch;
-  }
-
-  async createUser(createUserDto: CreateUserDto, user: IUser) {
-    const { name, email, password, age, gender, address, role, company } =
-      createUserDto;
-    // check xem đã có người dùng này chưa
-    const isExistUser = await this.userModel.findOne({
-      email,
-    });
-
-    if (isExistUser) {
-      throw new BadRequestException(`Người dùng ${email} đã tồn tại!`);
-    }
-
-    // hash password
-    const hashPassword = this.hashPassword(createUserDto.password);
-    const newUser = await this.userModel.create({
-      name,
-      email,
-      password: hashPassword,
-      age,
-      gender,
-      address,
-      role,
-      company,
-      createdBy: {
-        _id: user._id,
-        email: user.email,
-      },
-    });
-
-    return {
-      _id: newUser?._id,
-      createdAt: newUser.createdAt,
-    };
-  }
-
-  async register(registerUserDto: RegisterUserDto) {
-    // check xem đã có người dùng này chưa
-    const isExistUser = await this.userModel.findOne({
-      email: registerUserDto.email,
-    });
-
-    if (isExistUser) {
-      throw new BadRequestException(
-        `Người dùng ${registerUserDto.email} đã tồn tại!`,
-      );
-    }
-
-    const hashPassword = this.hashPassword(registerUserDto.password);
-
-    let newRegisterUser = await this.userModel.create({
-      ...registerUserDto,
-      password: hashPassword,
-      role: 'USER',
-    });
-
-    return newRegisterUser;
-  }
 
   async findAllUserWithPagination(
     current: number,
@@ -146,12 +82,84 @@ export class UsersService {
       .populate({ path: 'role', select: { name: 1, _id: 1 } });
   }
 
+  findUserByToken = async (refresh_token: string) => {
+    return await this.userModel
+      .findOne({
+        refreshToken: refresh_token,
+      })
+      .populate({
+        path: 'role',
+        select: { name: 1 },
+      });
+  };
+
   findOneByUsername(username: string) {
     return this.userModel
       .findOne({
         email: username,
       })
-      .populate({ path: 'role', select: { name: 1, permissions: 1 } });
+      .populate({ path: 'role', select: { name: 1 } });
+  }
+
+  async createUser(createUserDto: CreateUserDto, user: IUser) {
+    const { name, email, password, age, gender, address, role, company } =
+      createUserDto;
+    // check xem đã có người dùng này chưa
+    const isExistUser = await this.userModel.findOne({
+      email,
+    });
+
+    if (isExistUser) {
+      throw new BadRequestException(`Người dùng ${email} đã tồn tại!`);
+    }
+
+    // hash password
+    const hashPassword = this.hashPassword(createUserDto.password);
+    const newUser = await this.userModel.create({
+      name,
+      email,
+      password: hashPassword,
+      age,
+      gender,
+      address,
+      role,
+      company,
+      createdBy: {
+        _id: user._id,
+        email: user.email,
+      },
+    });
+
+    return {
+      _id: newUser?._id,
+      createdAt: newUser.createdAt,
+    };
+  }
+
+  async register(registerUserDto: RegisterUserDto) {
+    // check xem đã có người dùng này chưa
+    const isExistUser = await this.userModel.findOne({
+      email: registerUserDto.email,
+    });
+
+    if (isExistUser) {
+      throw new BadRequestException(
+        `Người dùng ${registerUserDto.email} đã tồn tại!`,
+      );
+    }
+
+    // get user role
+    const userRole = await this.roleModel.findOne({ name: USER_ROLE });
+
+    const hashPassword = this.hashPassword(registerUserDto.password);
+
+    let newRegisterUser = await this.userModel.create({
+      ...registerUserDto,
+      password: hashPassword,
+      role: userRole?._id,
+    });
+
+    return newRegisterUser;
   }
 
   async updateUserById(updateUserDto: UpdateUserDto, user: IUser) {
@@ -211,9 +219,15 @@ export class UsersService {
     );
   };
 
-  findUserByToken = async (refresh_token: string) => {
-    return await this.userModel.findOne({
-      refreshToken: refresh_token,
-    });
+  // helper functions
+  hashPassword = (plainPassword: string) => {
+    const salt = genSaltSync(10);
+    const hash = hashSync(plainPassword, salt);
+    return hash;
   };
+
+  isValidPassword(password: string, hash: string) {
+    const isPasswordMatch = compareSync(password, hash); // true
+    return isPasswordMatch;
+  }
 }

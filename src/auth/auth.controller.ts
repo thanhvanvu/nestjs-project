@@ -13,10 +13,14 @@ import { LocalAuthGuard } from './local-auth.guard';
 import { RegisterUserDto } from 'src/users/dto/create-user.dto';
 import { Request, Response } from 'express';
 import { IUser } from 'src/users/users.interface';
+import { RolesService } from 'src/roles/roles.service';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private roleService: RolesService,
+  ) {}
 
   @Public()
   @ResponseMessage('User Login')
@@ -41,7 +45,19 @@ export class AuthController {
   // NestJS sẽ tự động decode và lưu vô req.user
   @ResponseMessage('Fetch account with access token')
   @Get('/account')
-  handleFetchAccount(@User() user: IUser) {
+  async handleFetchAccount(@User() user: IUser) {
+    // user = {
+    //  _id: '66f3f8e6f74bb1733851a5a5',
+    //  name: 'I am user',
+    //  email: 'vvt4994@gmail.com',
+    //  role: { _id: '66f3f8e6f74bb1733851a5a0', name: 'NORMAL_USER' }
+    // }
+
+    const temp = (await this.roleService.getRoleById(user.role._id)) as any;
+
+    // thêm 1 trường permissions trong object user
+    user.permissions = temp.permissions;
+
     return { user };
   }
 

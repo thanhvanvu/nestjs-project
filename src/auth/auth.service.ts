@@ -6,6 +6,7 @@ import { RegisterUserDto } from 'src/users/dto/create-user.dto';
 import { ConfigService } from '@nestjs/config';
 import { Response } from 'express';
 import ms from 'ms';
+import { RolesService } from 'src/roles/roles.service';
 
 @Injectable()
 export class AuthService {
@@ -13,6 +14,7 @@ export class AuthService {
     private usersService: UsersService,
     private jwtService: JwtService,
     private configService: ConfigService,
+    private roleServices: RolesService,
   ) {}
 
   // username
@@ -30,7 +32,17 @@ export class AuthService {
       );
 
       if (isValidPassword === true) {
-        return user;
+        // get user role
+        const userRole = user.role as unknown as { _id: string; name: string };
+
+        const temp = await this.roleServices.getRoleById(userRole._id);
+
+        const objUser = {
+          ...user.toObject(),
+          permissions: temp?.permissions ?? [],
+        };
+
+        return objUser;
       }
     } else {
       return null;
@@ -55,7 +67,7 @@ export class AuthService {
   };
 
   async loginSuccess(user: IUser, response: Response) {
-    const { _id, name, email, role } = user;
+    const { _id, name, email, role, permissions } = user;
     // create access token with username and sub
     const payload = {
       sub: 'token login',
@@ -84,6 +96,7 @@ export class AuthService {
         name,
         email,
         role,
+        permissions,
       },
     };
   }
@@ -115,6 +128,11 @@ export class AuthService {
         // update user with refresh token
         await this.usersService.updateUserToken(refreshToken, _id.toString());
 
+        // get user role
+        const userRole = user.role as unknown as { _id: string; name: string };
+
+        const temp = await this.roleServices.getRoleById(userRole._id);
+
         // set refresh token in cookie
         response.cookie('refresh_token', refreshToken, {
           httpOnly: true,
@@ -128,6 +146,7 @@ export class AuthService {
             name,
             email,
             role,
+            permissions: temp?.permissions ?? [],
           },
         };
       }
