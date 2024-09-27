@@ -1,10 +1,13 @@
+import { Permission } from './../permissions/schemas/permission.schemas';
 import {
   ExecutionContext,
+  ForbiddenException,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
+import { request } from 'express';
 import { IS_PUBLIC_KEY } from 'src/decorator/customize';
 
 @Injectable()
@@ -24,8 +27,10 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     return super.canActivate(context);
   }
 
-  handleRequest(err, user, info) {
-    // You can throw an exception based on either "info" or "err" arguments
+  // validate in jwt.strategy -> handleRequest
+  handleRequest(err, user, info, context: ExecutionContext) {
+    // nếu hàm validate trong jwt.strategy không giải mã được token
+    // throw error
     if (err || !user) {
       throw (
         err ||
@@ -34,6 +39,26 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
         )
       );
     }
+
+    // get the request object from the context
+    const request = context.switchToHttp().getRequest();
+
+    // check permission
+    const targetMethod = request.method;
+    const targetEndpoint = request.route?.path;
+
+    const permissions = user?.permissions;
+
+    const isExistPermission = permissions.find(
+      (permission) =>
+        targetMethod === permission.method &&
+        targetEndpoint === permission.apiPath,
+    );
+
+    if (!isExistPermission) {
+      throw new ForbiddenException('Bạn không có quyền sử dụng API này!');
+    }
+
     return user;
   }
 }

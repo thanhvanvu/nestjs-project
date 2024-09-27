@@ -188,7 +188,7 @@ export class UsersService {
       _id: id,
     });
 
-    if (foundUser.email === 'admind@gmail.com') {
+    if (foundUser && foundUser.email === 'admind@gmail.com') {
       throw new BadGatewayException('Không thể xóa admin!');
     }
 
