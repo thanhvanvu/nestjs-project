@@ -46,6 +46,13 @@
     "rxjs": "7.2.0",
     "soft-delete-plugin-mongoose": "1.0.15"
   },
+  "overrides": {
+    "@nestjs-modules/mailer": {
+      "inline-css": {
+        "cheerio": "1.0.0-rc.10"
+      }
+    }
+  },
   "devDependencies": {
     "@nestjs/cli": "9.4.2",
     "@nestjs/schematics": "9.1.0",
