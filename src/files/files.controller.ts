@@ -23,21 +23,24 @@ export class FilesController {
   @Post('upload')
   @UseInterceptors(FileInterceptor('fileUpload'))
   // https://docs.nestjs.com/techniques/file-upload#file-validation
-  uploadFile(
-    @UploadedFile(
-      new ParseFilePipeBuilder()
-        .addFileTypeValidator({
-          fileType: 'image/jpeg|application/pdf|image/png',
-        })
-        .addMaxSizeValidator({
-          maxSize: 1000 * 1024,
-        })
-        .build({
-          errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
-        }),
-    )
-    file: Express.Multer.File,
-  ) {
+  // uploadFile(
+  //   @UploadedFile(
+  //     new ParseFilePipeBuilder()
+  //       .addFileTypeValidator({
+  //         fileType: 'image/jpeg|application/pdf|image/png',
+  //       })
+  //       .addMaxSizeValidator({
+  //         maxSize: 1000 * 1024,
+  //       })
+  //       .build({
+  //         errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+  //       }),
+  //   )
+  //   file: Express.Multer.File,
+  // ) {
+  //   return { fileName: file.filename };
+  // }
+  uploadFile(@UploadedFile() file: Express.Multer.File) {
     return { fileName: file.filename };
   }
 
