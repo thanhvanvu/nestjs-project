@@ -24,13 +24,9 @@ export class MailController {
     private jobModel: SoftDeleteModel<JobDocument>,
   ) {}
 
-  @Cron(CronExpression.EVERY_30_SECONDS)
-  handleCron() {
-    console.log('Called every 30 seconds');
-  }
-
   @Get()
   @Public()
+  @Cron('0 0 0 * * 0') // 0:00 AM every sunday
   @ResponseMessage('Test email')
   async handleTestEmail() {
     const subscribers = await this.subscriberModel.find({});
